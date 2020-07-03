@@ -75,7 +75,7 @@ void guiCodeRegions(const LinesWithNotes &linesWithNotes, TextEditor &editor)
 {
     for (const auto & lineWithNote : linesWithNotes) {
         if (ImGui::Button(lineWithNote.second.c_str()))
-            editor.SetCursorPosition({lineWithNote.first, 0});
+            editor.SetCursorPosition({lineWithNote.first, 0}, 3);
         ImGuiExt::SameLine_IfPossible();
     }
     ImGui::NewLine();
