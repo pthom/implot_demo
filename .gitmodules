@@ -6,7 +6,7 @@
 	url = https://github.com/epezent/implot.git
 [submodule "external/ImGuiColorTextEdit"]
 	path = external/ImGuiColorTextEdit
-	url = https://github.com/BalazsJako/ImGuiColorTextEdit.git
+	url = https://github.com/pthom/ImGuiColorTextEdit.git
 [submodule "external/FunctionalPlus"]
 	path = external/FunctionalPlus
 	url = https://github.com/Dobiasd/FunctionalPlus.git
