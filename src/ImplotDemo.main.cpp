@@ -164,8 +164,10 @@ int main(int, char **)
     runnerParams.callbacks.LoadAdditionalFonts = MarkdownHelper::LoadFonts;
 
     // Set app dockable windows
-    runnerParams.dockingParams.dockableWindows = { implotDock, codeDock };
+    runnerParams.dockingParams.dockableWindows = { codeDock, implotDock };
 
+    auto implotContext = ImPlot::CreateContext();
     HelloImGui::Run(runnerParams);
+    ImPlot::DestroyContext(implotContext);
     return 0;
 }

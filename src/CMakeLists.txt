@@ -18,8 +18,10 @@ hello_imgui_add_app(implot_demo
     HyperlinkHelper.cpp
     HyperlinkHelper.h
     ${implot_dir}/implot.h
+    ${implot_dir}/implot_internal.h
     ${implot_dir}/implot.cpp
     ${implot_dir}/implot_demo.cpp
+    ${implot_dir}/implot_items.cpp
     ${textedit_dir}/TextEditor.h
     ${textedit_dir}/TextEditor.cpp
     )
