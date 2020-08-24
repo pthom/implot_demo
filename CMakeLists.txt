@@ -2,9 +2,11 @@ cmake_minimum_required(VERSION 3.10)
 project(my_app LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 14)
 
-add_compile_definitions("ImDrawIdx=unsigned int")
+include(${CMAKE_CURRENT_LIST_DIR}/external/imgui.cmake)
 
-set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE STRING "" FORCE)
+set(HELLOIMGUI_USE_SDL_OPENGL3 ON CACHE BOOL "" FORCE)
+set(HELLOIMGUI_BUILD_IMGUI OFF CACHE BOOL "" FORCE)
+
 add_subdirectory(external/hello_imgui)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${HELLOIMGUI_BASEPATH}/hello_imgui_cmake)
 if (EMSCRIPTEN)
