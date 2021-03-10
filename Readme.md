@@ -11,7 +11,6 @@ First, init the submodules:
 git submodule update --init --recursive
 ````
 
-
 ### Build instructions for emscripten
 
 Install emscripten if not present
