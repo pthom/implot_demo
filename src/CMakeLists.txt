@@ -17,6 +17,8 @@ hello_imgui_add_app(implot_demo
     MarkdownHelper.h
     HyperlinkHelper.cpp
     HyperlinkHelper.h
+    JsClipboardTricks.cpp
+    JsClipboardTricks.h
     ${implot_dir}/implot.h
     ${implot_dir}/implot_internal.h
     ${implot_dir}/implot.cpp

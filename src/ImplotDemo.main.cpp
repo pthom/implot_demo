@@ -4,6 +4,7 @@
 #include "TextEditor.h"
 #include "LibrarySources.h"
 #include "MarkdownHelper.h"
+#include "JsClipboardTricks.h"
 #include <fplus/fplus.hpp>
 
 
@@ -91,6 +92,33 @@ void setEditorAnnotatedSource(const AnnotatedSourceCode& annotatedSourceCode, Te
     editor.SetBreakpoints(lineNumbers);
 }
 
+#ifdef __EMSCRIPTEN__
+void handleJsClipboardShortcuts(TextEditor& textEditor)
+{
+  ImGuiIO& io = ImGui::GetIO();
+  auto shift = io.KeyShift;
+  auto ctrl = io.ConfigMacOSXBehaviors ? io.KeySuper : io.KeyCtrl;
+  auto alt = io.ConfigMacOSXBehaviors ? io.KeyCtrl : io.KeyAlt;
+
+  bool shallFillBrowserClipboard = false;
+  if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Insert)))
+      shallFillBrowserClipboard = true;
+  else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_C)))
+      shallFillBrowserClipboard = true;
+  else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_X)))
+      shallFillBrowserClipboard = true;
+  else if (!ctrl && shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete)))
+      shallFillBrowserClipboard = true;
+
+  #ifdef IMGUIMANUAL_CLIPBOARD_EXPORT_TO_BROWSER
+  if (shallFillBrowserClipboard)
+  {
+      std::cout << "Should copy!!!" << "\n";
+      JsClipboard_SetClipboardText(textEditor.GetSelectedText().c_str());
+  }
+  #endif
+}
+#endif // #ifdef __EMSCRIPTEN__
 
 int main(int, char **)
 {
@@ -151,7 +179,16 @@ int main(int, char **)
             if (fplus::is_suffix_of(std::string(".md"), appState.annotatedSourceCode.sourcePath))
                 MarkdownHelper::Markdown(appState.annotatedSourceCode.sourceCode);
             else
+            {
+#ifdef __EMSCRIPTEN__
+                if (ImGui::SmallButton("Copy " ICON_FA_COPY))
+                    JsClipboard_SetClipboardText(editor.GetSelectedText().c_str());
+#endif
                 editor.Render(appState.annotatedSourceCode.sourcePath.c_str());
+#ifdef __EMSCRIPTEN__
+                    handleJsClipboardShortcuts(editor);
+#endif
+            }
         };
     }
 
