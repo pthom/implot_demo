@@ -79,29 +79,28 @@ std::vector<LibrarySources> allSources()
 }
 
 
-LinesWithNotes findCollapsingHeaderRegions(const std::string &sourceCode)
+LinesWithNotes findDemoRegions(const std::string &sourceCode)
 {
     LinesWithNotes r;
 
-    static std::string regionToken = "ImGui::CollapsingHeader";
+    // for example, a demo line resemble to: void ShowDemo_DragRects() {
+    static std::string demoToken = "void ShowDemo_";
 
-    auto extractCollapsingHeaderName = [](const std::string &codeLine) {
-        // if codeLine == "if (ImGui::CollapsingHeader("Line Plots")) {"
-        // then return
-        // "Line Plots"
-        auto tokens = fplus::split('"', true, codeLine);
-        if (tokens.size() >= 3)
-            return tokens[1];
-        else
-            return std::string();
+    auto extractDemoName = [](const std::string &codeLine) {
+        std::string r = codeLine;
+        r= fplus::replace_tokens<std::string>("void ShowDemo_", "", codeLine);
+        r = fplus::replace_tokens<std::string>("()", "", r);
+        r = fplus::replace_tokens<std::string>("{", "", r);
+        r = fplus::trim_whitespace(r);
+        return r;
     };
 
     auto lines = fplus::split('\n', true, sourceCode);
     for (size_t line_number = 0; line_number < lines.size(); line_number++)
     {
         const std::string& line = lines[line_number];
-        if (line.find(regionToken) != std::string::npos)
-            r[(int)(line_number + 1)] = extractCollapsingHeaderName(line);
+        if (line.find(demoToken) != std::string::npos)
+            r[(int)(line_number + 1)] = extractDemoName(line);
     }
     return r;
 }
@@ -115,7 +114,7 @@ AnnotatedSourceCode ReadSelectedLibrarySource(const std::string sourcePath)
     AnnotatedSourceCode r;
     r.sourcePath = sourcePath;
     r.sourceCode = std::string((const char *) assetData.data);
-    r.linesWithNotes = findCollapsingHeaderRegions(r.sourceCode);
+    r.linesWithNotes = findDemoRegions(r.sourceCode);
     HelloImGui::FreeAssetFileData(&assetData);
     return r;
 }
