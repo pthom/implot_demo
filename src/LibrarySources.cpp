@@ -83,14 +83,15 @@ LinesWithNotes findDemoRegions(const std::string &sourceCode)
 {
     LinesWithNotes r;
 
-    // for example, a demo line resemble to: void ShowDemo_DragRects() {
-    static std::string demoToken = "void ShowDemo_";
+    // for example, a demo line resemble to: void Demo_DragRects() {
+    static std::string demoToken = "void Demo_";
 
     auto extractDemoName = [](const std::string &codeLine) {
         std::string r = codeLine;
         r= fplus::replace_tokens<std::string>("void ShowDemo_", "", codeLine);
         r = fplus::replace_tokens<std::string>("()", "", r);
         r = fplus::replace_tokens<std::string>("{", "", r);
+        r = fplus::replace_tokens<std::string>(demoToken, "", r);
         r = fplus::trim_whitespace(r);
         return r;
     };
