@@ -140,7 +140,7 @@ int main(int, char **)
 
     // App window params
     runnerParams.appWindowParams.windowTitle = "implot demo";
-    runnerParams.appWindowParams.windowSize = { 1200, 800};
+    runnerParams.appWindowParams.windowGeometry.size = { 1200, 800};
 
     // ImGui window params
     runnerParams.imGuiWindowParams.defaultImGuiWindowType =
@@ -158,7 +158,7 @@ int main(int, char **)
     {
         implotDock.label = "ImPlot Demo";
         implotDock.dockSpaceName = "MainDockSpace";
-        implotDock.GuiFonction = [&implotDock] {
+        implotDock.GuiFunction = [&implotDock] {
             if (implotDock.isVisible)
                 ImPlot::ShowDemoWindow(nullptr);
         };
@@ -170,7 +170,7 @@ int main(int, char **)
         codeDock.label = "Code";
         //codeDock.dockSpaceName = "CodeSpace";
         codeDock.dockSpaceName = "MainDockSpace";
-        codeDock.GuiFonction = [&editor, &appState,&SetupEditor] {
+        codeDock.GuiFunction = [&editor, &appState,&SetupEditor] {
             if (guiSelectLibrarySource(appState.librarySources, &(appState.annotatedSourceCode)))
                 SetupEditor();
             guiSourceCategories(appState);
