@@ -29,7 +29,7 @@ Launch a web server
 python3 -m http.server
 ````
 
-Then, browse to http://localhost:8000/src/implot_demo.html
+Then, browse to http://localhost:8000/build_emscripten/src/implot_demo.html
 
 ### Build instructions on desktop (linux, MacOS, Windows)
 
