@@ -1,4 +1,5 @@
-#include "hello_imgui.h"
+#include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/icons_font_awesome_4.h"
 
 #include "imgui_markdown.h"       // https://github.com/juliettef/imgui_markdown
 #include "MarkdownHelper.h"
@@ -12,7 +13,7 @@ ImFont *fontH1, *fontH2, *fontH3;
 
 void LoadFonts()
 {
-    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons()();
+    HelloImGui::ImGuiDefaultSettings::LoadDefaultFont_WithFontAwesomeIcons();
     std::string fontFilename = "fonts/DroidSans.ttf";
     float fontSizeStep = 4.;
     fontH3 = HelloImGui::LoadFontTTF_WithFontAwesomeIcons(fontFilename, 14.f + fontSizeStep * 1.f);

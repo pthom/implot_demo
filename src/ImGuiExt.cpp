@@ -1,6 +1,7 @@
 #include "ImGuiExt.h"
 #include "imgui.h"
-#include "hello_imgui.h"
+#include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/icons_font_awesome_4.h"
 #include "HyperlinkHelper.h"
 
 namespace ImGuiExt
