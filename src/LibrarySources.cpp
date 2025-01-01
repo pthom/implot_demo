@@ -22,54 +22,7 @@ std::vector<LibrarySources> thisLibrarySources()
 
 std::vector<LibrarySources> otherSources()
 {
-    return
-    {
-            {
-                    "ImGuiColorTextEdit", "ImGuiColorTextEdit", "https://github.com/BalazsJako/ImGuiColorTextEdit",
-                    {
-                            "README.md",
-                            "LICENSE",
-                            "TextEditor.h",
-                            "TextEditor.cpp",
-                            "CONTRIBUTING",
-                    }
-            },
-            {
-                    "imgui_markdown", "imgui_markdown", "https://github.com/juliettef/imgui_markdown",
-                    {
-                            "README.md",
-                            "imgui_markdown.h",
-                            "License.txt",
-                    }
-            },
-            {
-                    "hello_imgui", "Hello ImGui", "https://github.com/pthom/hello_imgui",
-                    {
-                            "README.md",
-                            "LICENSE",
-                            "hello_imgui.h",
-                            "hello_imgui_api.md"
-                    }
-            },
-
-            {
-                    "implot_demo", "This Demo", "https://github.com/pthom/implot_demo",
-                    {
-                            "Readme.md",
-                            "LICENSE",
-                            "ImplotDemo.main.cpp",
-                            "LibrarySources.h",
-                            "LibrarySources.cpp",
-//                            "CMakeLists.txt",
-//                            "MarkdownHelper.h",
-//                            "MarkdownHelper.cpp",
-//                            "HyperlinkHelper.cpp",
-//                            "HyperlinkHelper.h",
-//                            "ImGuiExt.cpp",
-//                            "ImGuiExt.h",
-                    }
-            }
-    };
+    return {};
 }
 
 
