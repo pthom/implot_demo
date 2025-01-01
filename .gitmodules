@@ -13,3 +13,6 @@
 [submodule "external/imgui_markdown"]
 	path = external/imgui_markdown
 	url = https://github.com/juliettef/imgui_markdown.git
+[submodule "external/implot3d"]
+	path = external/implot3d
+	url = https://github.com/brenocq/implot3d.git

@@ -11,15 +11,9 @@ echo "THIS_DIR=$THIS_DIR"
 #exit 0
 
 cd $THIS_DIR
-if [ ! -d assets/code ]; then
-  mkdir -p assets/code
-fi
+mkdir -p assets/code/implot
+cp -f $EXTERNAL_DIR/implot/implot_demo.cpp assets/code/implot/implot_demo.cpp
 
-cd assets/code
+mkdir -p assets/code/implot3d
+cp -f $EXTERNAL_DIR/implot3d/implot3d_demo.cpp assets/code/implot3d/implot3d_demo.cpp
 
-if [ ! -d implot ]; then
-  mkdir implot
-fi
-cd implot
-cp -f $EXTERNAL_DIR/implot/* .
-cd ..

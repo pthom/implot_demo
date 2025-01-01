@@ -3,47 +3,20 @@
 #include "LibrarySources.h"
 
 
-std::vector<LibrarySources> thisLibrarySources()
-{
-    return
-    {
-        {
-            "implot", "ImPlot", "https://github.com/epezent/implot",
-                    {
-                            "README.md",
-                            "LICENSE",
-                            "implot_demo.cpp",
-                            "implot.h",
-                            "implot.cpp",
-                    }
-        }
-    };
-}
-
-std::vector<LibrarySources> otherSources()
-{
-    return {};
-}
-
-
-std::vector<LibrarySources> allSources()
-{
-    return fplus::append(thisLibrarySources(), otherSources());
-}
-
 
 LinesWithNotes findDemoRegions(const std::string &sourceCode)
 {
     LinesWithNotes r;
 
     // for example, a demo line resemble to: void Demo_DragRects() {
-    static std::string demoToken = "void Demo_";
+    static std::string demoToken = "void Demo";
 
     auto extractDemoName = [](const std::string &codeLine) {
         std::string r = codeLine;
         r= fplus::replace_tokens<std::string>("void ShowDemo_", "", codeLine);
         r = fplus::replace_tokens<std::string>("()", "", r);
         r = fplus::replace_tokens<std::string>("{", "", r);
+        r = fplus::replace_tokens<std::string>(demoToken + "_", "", r);
         r = fplus::replace_tokens<std::string>(demoToken, "", r);
         r = fplus::trim_whitespace(r);
         return r;
@@ -53,7 +26,11 @@ LinesWithNotes findDemoRegions(const std::string &sourceCode)
     for (size_t line_number = 0; line_number < lines.size(); line_number++)
     {
         const std::string& line = lines[line_number];
-        if (line.find(demoToken) != std::string::npos)
+
+        bool lineContainsDemoToken = line.find(demoToken) != std::string::npos;
+        bool lineDefinesZeroParamFunction = (line.find("()") != std::string::npos);
+
+        if (lineContainsDemoToken && lineDefinesZeroParamFunction)
             r[(int)(line_number + 1)] = extractDemoName(line);
     }
     return r;

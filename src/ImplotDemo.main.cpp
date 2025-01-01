@@ -1,75 +1,13 @@
 #include "hello_imgui/hello_imgui.h"
+#include "hello_imgui/icons_font_awesome_4.h"
 #include "implot.h"
+#include "implot3d.h"
 #include "ImGuiExt.h"
 #include "TextEditor.h"
 #include "LibrarySources.h"
 #include "MarkdownHelper.h"
 #include "JsClipboardTricks.h"
 #include <fplus/fplus.hpp>
-
-
-struct AppState
-{
-    AnnotatedSourceCode annotatedSourceCode = ReadSelectedLibrarySource("implot/implot_demo.cpp");
-    std::vector<LibrarySources> librarySources = thisLibrarySources();
-    bool showAllSources = false;
-};
-
-
-bool guiSelectLibrarySource(
-        const std::vector<LibrarySources>& librarySources,
-        AnnotatedSourceCode *selectedLibrarySource)
-{
-    bool changed = false;
-
-    for (const auto & librarySource: librarySources)
-    {
-        ImGui::Text("%s", librarySource.name.c_str());
-        ImGui::SameLine(150.f);
-        for (const auto & source: librarySource.sources)
-        {
-            std::string currentSourcePath = librarySource.path + "/" + source;
-            bool isSelected = (currentSourcePath == selectedLibrarySource->sourcePath);
-            std::string buttonLabel = source + "##" + librarySource.path;
-            if (isSelected)
-                ImGui::TextDisabled("%s", source.c_str());
-            else if (ImGui::Button(buttonLabel.c_str()))
-            {
-                *selectedLibrarySource = ReadSelectedLibrarySource(currentSourcePath);
-                changed = true;
-            }
-            ImGuiExt::SameLine_IfPossible(400.f);
-        }
-        ImGui::SameLine(ImGui::GetIO().DisplaySize.x - 350.f );
-        ImGuiExt::Hyperlink(librarySource.url);
-    }
-    return changed;
-}
-
-
-void menuEditorTheme(TextEditor &editor) {
-    if (ImGui::BeginMenu("Editor"))
-    {
-        if (ImGui::MenuItem("Dark palette"))
-            editor.SetPalette(TextEditor::GetDarkPalette());
-        if (ImGui::MenuItem("Light palette"))
-            editor.SetPalette(TextEditor::GetLightPalette());
-        if (ImGui::MenuItem("Retro blue palette"))
-            editor.SetPalette(TextEditor::GetRetroBluePalette());
-        ImGui::EndMenu();
-    }
-}
-
-
-void guiSourceCategories(AppState &appState) {
-    if (ImGui::Checkbox("Show other sources", &appState.showAllSources))
-    {
-        if (appState.showAllSources)
-            appState.librarySources = allSources();
-        else
-            appState.librarySources = thisLibrarySources();
-    }
-}
 
 
 void guiCodeRegions(const LinesWithNotes &linesWithNotes, TextEditor &editor)
@@ -101,13 +39,13 @@ void handleJsClipboardShortcuts(TextEditor& textEditor)
   auto alt = io.ConfigMacOSXBehaviors ? io.KeyCtrl : io.KeyAlt;
 
   bool shallFillBrowserClipboard = false;
-  if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Insert)))
+  if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_Insert))
       shallFillBrowserClipboard = true;
-  else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_C)))
+  else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_C))
       shallFillBrowserClipboard = true;
-  else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_X)))
+  else if (ctrl && !shift && !alt && ImGui::IsKeyPressed(ImGuiKey_X))
       shallFillBrowserClipboard = true;
-  else if (!ctrl && shift && !alt && ImGui::IsKeyPressed(ImGui::GetKeyIndex(ImGuiKey_Delete)))
+  else if (!ctrl && shift && !alt && ImGui::IsKeyPressed(ImGuiKey_Delete))
       shallFillBrowserClipboard = true;
 
   #ifdef IMGUIMANUAL_CLIPBOARD_EXPORT_TO_BROWSER
@@ -120,32 +58,57 @@ void handleJsClipboardShortcuts(TextEditor& textEditor)
 }
 #endif // #ifdef __EMSCRIPTEN__
 
+
+
+struct TextEditorAnnotatedSource
+{
+    AnnotatedSourceCode annotatedSource;
+    TextEditor editor;
+
+    TextEditorAnnotatedSource(const char *source_path)
+    {
+        annotatedSource = ReadSelectedLibrarySource(source_path);
+
+        editor.SetPalette(TextEditor::GetLightPalette());
+        auto lang = TextEditor::LanguageDefinition::CPlusPlus();
+        editor.SetLanguageDefinition(lang);
+        setEditorAnnotatedSource(annotatedSource, editor);
+    }
+
+    void Gui()
+    {
+        guiCodeRegions(annotatedSource.linesWithNotes, editor);
+
+        #ifdef __EMSCRIPTEN__
+        if (ImGui::SmallButton("Copy " ICON_FA_COPY))
+            JsClipboard_SetClipboardText(editor.GetSelectedText().c_str());
+        #endif
+
+        editor.Render(annotatedSource.sourcePath.c_str());
+
+        #ifdef __EMSCRIPTEN__
+        handleJsClipboardShortcuts(editor);
+        #endif
+    }
+};
+
+
+
 int main(int, char **)
 {
-    AppState appState;
-
-    TextEditor editor;
-    editor.SetPalette(TextEditor::GetLightPalette());
-
-    auto lang = TextEditor::LanguageDefinition::CPlusPlus();
-    editor.SetLanguageDefinition(lang);
-
-    auto SetupEditor = [&editor, &appState]() {
-        setEditorAnnotatedSource(appState.annotatedSourceCode, editor);
-    };
-
-    SetupEditor();
+    TextEditorAnnotatedSource implotEditorAnnotatedSource("implot/implot_demo.cpp");
+    TextEditorAnnotatedSource implot3dEditorAnnotatedSource("implot3d/implot3d_demo.cpp");
 
     HelloImGui::RunnerParams runnerParams;
 
     // App window params
-    runnerParams.appWindowParams.windowTitle = "implot demo";
+    runnerParams.appWindowParams.windowTitle = "implot demo - implot3d demo";
     runnerParams.appWindowParams.windowGeometry.size = { 1200, 800};
 
     // ImGui window params
     runnerParams.imGuiWindowParams.defaultImGuiWindowType =
             HelloImGui::DefaultImGuiWindowType::ProvideFullScreenDockSpace;
-    runnerParams.imGuiWindowParams.showMenuBar = true;
+    runnerParams.imGuiWindowParams.showMenuBar = false;
     runnerParams.imGuiWindowParams.showStatusBar = true;
 
     // Split the screen in two parts
@@ -165,46 +128,49 @@ int main(int, char **)
         implotDock.callBeginEnd = false;
     };
 
-    HelloImGui::DockableWindow codeDock;
+    HelloImGui::DockableWindow implot3dDock;
     {
-        codeDock.label = "Code";
-        //codeDock.dockSpaceName = "CodeSpace";
-        codeDock.dockSpaceName = "MainDockSpace";
-        codeDock.GuiFunction = [&editor, &appState,&SetupEditor] {
-            if (guiSelectLibrarySource(appState.librarySources, &(appState.annotatedSourceCode)))
-                SetupEditor();
-            guiSourceCategories(appState);
-            guiCodeRegions(appState.annotatedSourceCode.linesWithNotes, editor);
+        implot3dDock.label = "ImPlot3D Demo";
+        implot3dDock.dockSpaceName = "MainDockSpace";
+        implot3dDock.GuiFunction = [&implot3dDock] {
+            if (implot3dDock.isVisible)
+                ImPlot3D::ShowDemoWindow(nullptr);
+        };
+        implot3dDock.callBeginEnd = false;
+    };
 
-            if (fplus::is_suffix_of(std::string(".md"), appState.annotatedSourceCode.sourcePath))
-                MarkdownHelper::Markdown(appState.annotatedSourceCode.sourceCode);
-            else
-            {
-#ifdef __EMSCRIPTEN__
-                if (ImGui::SmallButton("Copy " ICON_FA_COPY))
-                    JsClipboard_SetClipboardText(editor.GetSelectedText().c_str());
-#endif
-                editor.Render(appState.annotatedSourceCode.sourcePath.c_str());
-#ifdef __EMSCRIPTEN__
-                    handleJsClipboardShortcuts(editor);
-#endif
-            }
+
+    HelloImGui::DockableWindow implotDemoCodeDock;
+    {
+        implotDemoCodeDock.label = "Implot Demo - Code";
+        implotDemoCodeDock.dockSpaceName = "MainDockSpace";
+        implotDemoCodeDock.GuiFunction = [&implotEditorAnnotatedSource] {
+            implotEditorAnnotatedSource.Gui();
         };
     }
 
-    // Menu
-    runnerParams.callbacks.ShowMenus = [&editor]() {
-        menuEditorTheme(editor);
-    };
+    HelloImGui::DockableWindow implot3dDemoCodeDock;
+    {
+        implot3dDemoCodeDock.label = "Implot3d Demo - Code";
+        implot3dDemoCodeDock.dockSpaceName = "MainDockSpace";
+        implot3dDemoCodeDock.GuiFunction = [&implot3dEditorAnnotatedSource] {
+            implot3dEditorAnnotatedSource.Gui();
+        };
+    }
 
     // Fonts
     runnerParams.callbacks.LoadAdditionalFonts = MarkdownHelper::LoadFonts;
 
     // Set app dockable windows
-    runnerParams.dockingParams.dockableWindows = { implotDock, codeDock };
+    runnerParams.dockingParams.dockableWindows = { implotDock, implot3dDock, implotDemoCodeDock, implot3dDemoCodeDock };
 
     auto implotContext = ImPlot::CreateContext();
+    auto implot3dContext = ImPlot3D::CreateContext();
+
     HelloImGui::Run(runnerParams);
+
     ImPlot::DestroyContext(implotContext);
+    ImPlot3D::DestroyContext(implot3dContext);
+
     return 0;
 }

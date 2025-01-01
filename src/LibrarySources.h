@@ -3,17 +3,7 @@
 #include <string>
 #include <map>
 
-struct LibrarySources
-{
-    std::string path;
-    std::string name;
-    std::string url;
-    std::vector<std::string> sources;
-};
 
-std::vector<LibrarySources> thisLibrarySources();
-std::vector<LibrarySources> otherSources();
-std::vector<LibrarySources> allSources();
 
 using LinesWithNotes = std::map<int, std::string>;
 
