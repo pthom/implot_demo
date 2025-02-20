@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(my_app LANGUAGES C CXX)
+project(implot_demo LANGUAGES C CXX)
 set(CMAKE_CXX_STANDARD 17)
 
 # Force ImDrawIdx=unsigned int (performance option for ImPlot)
