@@ -9,6 +9,8 @@
 #include "JsClipboardTricks.h"
 #include <fplus/fplus.hpp>
 
+#include "HyperlinkHelper.h"
+
 
 void guiCodeRegions(const LinesWithNotes &linesWithNotes, TextEditor &editor)
 {
@@ -70,7 +72,10 @@ struct TextEditorAnnotatedSource
         annotatedSource = ReadSelectedLibrarySource(source_path);
 
         editor.SetPalette(TextEditor::GetLightPalette());
-        auto lang = TextEditor::LanguageDefinition::CPlusPlus();
+
+        bool isPython = fplus::is_suffix_of<std::string>(".py", source_path);
+        auto lang =
+            isPython ? TextEditor::LanguageDefinition::Lua() :TextEditor::LanguageDefinition::CPlusPlus();
         editor.SetLanguageDefinition(lang);
         setEditorAnnotatedSource(annotatedSource, editor);
     }
@@ -145,6 +150,11 @@ int main(int, char **)
         implotDemoCodeDock.label = "Implot Demo - Code";
         implotDemoCodeDock.dockSpaceName = "MainDockSpace";
         implotDemoCodeDock.GuiFunction = [&implotEditorAnnotatedSource] {
+            ImGui::Text("View on GitHub:");
+            ImGui::SameLine();
+            if (ImGui::Button("C++ demo code"))
+                HyperlinkHelper::OpenUrl("https://github.com/epezent/implot/blob/master/implot_demo.cpp");
+
             implotEditorAnnotatedSource.Gui();
         };
     }
@@ -154,6 +164,14 @@ int main(int, char **)
         implot3dDemoCodeDock.label = "Implot3d Demo - Code";
         implot3dDemoCodeDock.dockSpaceName = "MainDockSpace";
         implot3dDemoCodeDock.GuiFunction = [&implot3dEditorAnnotatedSource] {
+            ImGui::Text("View on GitHub:");
+            ImGui::SameLine();
+            if (ImGui::Button("C++ demo code"))
+                HyperlinkHelper::OpenUrl("https://github.com/brenocq/implot3d/blob/main/implot3d_demo.cpp");
+            ImGui::SameLine();
+            if (ImGui::Button("Python demo code"))
+                HyperlinkHelper::OpenUrl("https://github.com/pthom/imgui_bundle/blob/main/bindings/imgui_bundle/demos_python/demos_implot3d/implot3d_demo.py");
+
             implot3dEditorAnnotatedSource.Gui();
         };
     }
@@ -162,7 +180,8 @@ int main(int, char **)
     runnerParams.callbacks.LoadAdditionalFonts = MarkdownHelper::LoadFonts;
 
     // Set app dockable windows
-    runnerParams.dockingParams.dockableWindows = { implotDock, implot3dDock, implotDemoCodeDock, implot3dDemoCodeDock };
+    runnerParams.dockingParams.dockableWindows = {
+        implotDock, implot3dDock, implotDemoCodeDock, implot3dDemoCodeDock };
 
     auto implotContext = ImPlot::CreateContext();
     auto implot3dContext = ImPlot3D::CreateContext();
